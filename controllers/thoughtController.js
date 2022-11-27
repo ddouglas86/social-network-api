@@ -13,14 +13,14 @@ const thoughtController = {
             });
     },
     getThoughtById(req, res) {
-        User.findOne({ _id: req.params.thoughtId })
+        Thought.findOne({ _id: req.params.thoughtId })
             .populate('reactions')
-            .then((thoughtId) => {
-                if (!thoughtId) {
+            .then((thoughtData) => {
+                if (!thoughtData) {
                     res.json(404).json({ message: 'No matching id found' });
                     return;
                 }
-                res.json(thoughtId);
+                res.json(thoughtData);
             })
             .catch((err) => {
                 console.log(err);
@@ -100,16 +100,26 @@ const thoughtController = {
             .then((thoughtData) => {
                 User.findOneAndUpdate(
                     { _id: req.body.userId },
-                    { $push: { thoughts: thoughtData.id } },
+                    { $push: { thoughts: thoughtData._id } },
                     { new: true }
                 )
-                res.json(thoughtId);
+                .then((userData) => {
+                    if(!userData) {
+                        res.status(404).json({message: 'No matching user id found'});
+                        return;
+                    }
+                    res.json(userData);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    res.status(500),json(err);
+                })
             })
             .catch((err) => {
                 console.log(err);
                 res.status(500).json(err);
-            })
-    },
+            });
+    }
 };
 
 module.exports = thoughtController;
