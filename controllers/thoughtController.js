@@ -59,4 +59,22 @@ const thoughtController = {
                 res.status(500).json(err);
             });
     },
+    addReaction(req, res) {
+        Thought.findOneAndUpdate(
+            { id: req.params.thoughtId },
+            { $addToSet: { reactions: req.params.reactionId }},
+            { new: true, runValidators: true }
+        )
+        .then((thoughtData) => {
+            if(!thoughtData) {
+                res.json(404).json({ message: 'No matching id found'});
+                return;
+            }
+            res.json(thoughtData);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json(err);
+        });
+      },
 }
