@@ -13,7 +13,7 @@ const thoughtController = {
             });
     },
     getThoughtById(req, res) {
-        User.findOne({ id: req.params.thoughtId })
+        User.findOne({ _id: req.params.thoughtId })
             .populate('reactions')
             .then((thoughtId) => {
                 if (!thoughtId) {
@@ -28,7 +28,7 @@ const thoughtController = {
             });
     },
     deleteThought(req, res) {
-        Thought.findOneAndDelete({ id: req.params.thoughtId })
+        Thought.findOneAndDelete({ _id: req.params.thoughtId })
             .then((thoughtData) => {
                 if (!thoughtData) {
                     res.json(404).json({ message: 'No matching id found' });
@@ -45,7 +45,7 @@ const thoughtController = {
     },
     updateThought(req, res) {
         Thought.findOneAndUpdate(
-            { id: req.params.thoughtId },
+            { _id: req.params.thoughtId },
             { $set: req.body },
             { runValidators: true, new: true }
         )
@@ -63,7 +63,7 @@ const thoughtController = {
     },
     addReaction(req, res) {
         Thought.findOneAndUpdate(
-            { id: req.params.thoughtId },
+            { _id: req.params.thoughtId },
             { $addToSet: { reactions: req.params.reactionId } },
             { new: true, runValidators: true }
         )
@@ -81,7 +81,7 @@ const thoughtController = {
     },
     deleteReaction(req, res) {
         Thought.findOneAndUpdate(
-            { id: req.params.thoughtId },
+            { _id: req.params.thoughtId },
             { $pull: { reactions: req.params.reactionId } },
             { new: true })
             .then((thoughtData) => {
@@ -99,7 +99,7 @@ const thoughtController = {
         Thought.create(req.body)
             .then((thoughtData) => {
                 User.findOneAndUpdate(
-                    { id: req.body.userId },
+                    { _id: req.body.userId },
                     { $push: { thoughts: thoughtData.id } },
                     { new: true }
                 )
