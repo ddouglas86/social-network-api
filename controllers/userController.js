@@ -1,18 +1,78 @@
-const { User } = require('../models/User');
+const { User, Thought } = require('../models/User');
 
 const userController = {
     getAllUsers(req, res) {
         User.find
-        .populate('thoughts')
-        .populate('friends')
-        .then((userData) => {
-            res.json(userData);
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).json(err)
-        });
-    }
+            .populate('thoughts')
+            .populate('friends')
+            .then((userData) => {
+                res.json(userData);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err)
+            });
+    },
+    getUserById(req, res) {
+        User.findOne({ id: req.params.userId })
+            .populate('thoughts')
+            .populate('friends')
+            .then((userData) => {
+                if (!userData) {
+                    res.json(404).json({ message: 'No matching id found' });
+                    return;
+                }
+                res.json(userData);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
+    },
+    createUser(req, res) {
+        User.create(req.body)
+            .then((userData) => {
+                res.json(userData);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            })
+    },
+    updateUser(req, res) {
+        User.findOneAndUpdate(
+            { id: req.params.userId },
+            { $set: req.body },
+            { runValidators: true, new: true }
+        )
+            .then((userData) => {
+                if (!userData) {
+                    return res.status(404).json({ message: 'No matching id found to update' });
+                }
+                res.json(userData);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
+    },
+    deleteUser(req, res) {
+        User.findOneAndDelete({ id: req.params.userId })
+          .then((userData) => {
+              if(!userData) {
+                res.json(404).json({ message: 'No matching id found' });
+                return;
+            }
+            Thought.deleteMany({id: {$in: userData.thoughts}});
+          })
+          .then(() => {
+              res.json({ message: 'User deleted' });
+          })
+          .catch((err) => {
+              console.log(err);
+              res.status(500).json(err);
+          })
+      },
 };
 
 module.exports = userController;
