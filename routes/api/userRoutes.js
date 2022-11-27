@@ -15,12 +15,12 @@ router.route('/')
     .post(createUser);
 
 router.route('/:userId')
-.get(getUserById)
-.put(updateUser)
-.delete(deleteUser);
+    .get(getUserById)
+    .put(updateUser)
+    .delete(deleteUser);
 
 router.route('/:userId/friends/friendId')
-.post(addFriend)
-.delete(deleteFriend);
+    .post(addFriend)
+    .delete(deleteFriend);
 
 module.exports = router;
