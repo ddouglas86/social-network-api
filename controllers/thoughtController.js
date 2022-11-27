@@ -41,4 +41,22 @@ const thoughtController = {
               res.status(500).json(err);
           })
       },
+      updateThought(req, res) {
+        Thought.findOneAndUpdate(
+            { id: req.params.thoughtId },
+            { $set: req.body },
+            { runValidators: true, new: true }
+        )
+            .then((thoughtId) => {
+                if (!thoughtId) {
+                    res.status(404).json({ message: 'No matching id found to update' });
+                    return;
+                }
+                res.json(thoughtId);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
+    },
 }
