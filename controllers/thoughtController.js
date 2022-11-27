@@ -77,4 +77,22 @@ const thoughtController = {
             res.status(500).json(err);
         });
       },
-}
+      deleteReaction(req, res) {
+        Thought.findOneAndUpdate(
+            { id: req.params.thoughtId }, 
+            { $pull: { reactions: req.params.reactionId }}, 
+            { new: true })
+          .then((thoughtData) => {
+            if (!thoughtData) {
+              return res.status(404).json({ message: 'No matching id found' });
+            }
+            res.json(thoughtData);
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json(err);
+          });
+      }
+};
+
+module.exports = thoughtController;
