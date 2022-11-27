@@ -3,7 +3,7 @@ const { Thought, User } = require('../models');
 const thoughtController = {
     getAllThoughts(req, res) {
         Thought.find()
-            .populate('reactions')
+            .populate({path: 'reactions'})
             .then((thoughtData) => {
                 res.json(thoughtData);
             })
@@ -14,7 +14,7 @@ const thoughtController = {
     },
     getThoughtById(req, res) {
         Thought.findOne({ _id: req.params.thoughtId })
-            .populate('reactions')
+            .populate({path: 'reactions'})
             .then((thoughtData) => {
                 if (!thoughtData) {
                     res.json(404).json({ message: 'No matching id found' });

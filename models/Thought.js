@@ -7,7 +7,7 @@ const reactionSchema = new Schema(
             type: Schema.Types.ObjectId,
             default: () => new Types.ObjectId()
         },
-        reactionBody: {
+        reactionContent: {
             type: String,
             required: 'Please enter a reaction',
             trim: true,
@@ -32,7 +32,7 @@ const reactionSchema = new Schema(
 
 const thoughtSchema = new Schema(
     {
-        thoughtText: {
+        thoughtContent: {
             type: String,
             required: 'Please enter a thought',
             trim: true,
