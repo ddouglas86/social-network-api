@@ -2,7 +2,7 @@ const { User, Thought } = require('../models');
 
 const userController = {
     getAllUsers(req, res) {
-        User.find
+        User.find()
             .populate('thoughts')
             .populate('friends')
             .then((userData) => {
