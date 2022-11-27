@@ -3,8 +3,8 @@ const { User, Thought } = require('../models');
 const userController = {
     getAllUsers(req, res) {
         User.find()
-            .populate('thoughts')
-            .populate('friends')
+            .populate({ path: 'thoughts' })
+            .populate({ path: 'friends' })
             .then((userData) => {
                 res.json(userData);
             })
@@ -14,9 +14,9 @@ const userController = {
             });
     },
     getUserById(req, res) {
-        User.findOne({ id: req.params.userId })
-            .populate('thoughts')
-            .populate('friends')
+        User.findOne({ _id: req.params.userId })
+            .populate({ path: 'thoughts' })
+            .populate({ path: 'friends' })
             .then((userData) => {
                 if (!userData) {
                     res.json(404).json({ message: 'No matching id found' });
@@ -41,7 +41,7 @@ const userController = {
     },
     updateUser(req, res) {
         User.findOneAndUpdate(
-            { id: req.params.userId },
+            { _id: req.params.userId },
             { $set: req.body },
             { runValidators: true, new: true }
         )
@@ -58,56 +58,56 @@ const userController = {
             });
     },
     deleteUser(req, res) {
-        User.findOneAndDelete({ id: req.params.userId })
-          .then((userData) => {
-              if(!userData) {
-                res.json(404).json({ message: 'No matching id found' });
-                return;
-            }
-            Thought.deleteMany({id: {$in: userData.thoughts}});
-          })
-          .then(() => {
-              res.json({ message: 'User deleted' });
-          })
-          .catch((err) => {
-              console.log(err);
-              res.status(500).json(err);
-          })
-      },
-      addFriend(req, res) {
+        User.findOneAndDelete({ _id: req.params.userId })
+            .then((userData) => {
+                if (!userData) {
+                    res.json(404).json({ message: 'No matching id found' });
+                    return;
+                }
+                Thought.deleteMany({ _id: { $in: userData.thoughts } });
+            })
+            .then(() => {
+                res.json({ message: 'User deleted' });
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            })
+    },
+    addFriend(req, res) {
         User.findOneAndUpdate(
-            { id: req.params.userId },
-            { $addToSet: { friends: req.params.friendId }},
+            { _id: req.params.userId },
+            { $addToSet: { friends: req.params.friendId } },
             { new: true, runValidators: true }
         )
-        .then((userData) => {
-            if(!userData) {
-                res.json(404).json({ message: 'No matching id found'});
-                return;
-            }
-            res.json(userData);
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).json(err);
-        });
-      },
-      deleteFriend(req, res) {
+            .then((userData) => {
+                if (!userData) {
+                    res.json(404).json({ message: 'No matching id found' });
+                    return;
+                }
+                res.json(userData);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
+    },
+    deleteFriend(req, res) {
         User.findOneAndUpdate(
-            { id: req.params.userId }, 
-            { $pull: { friends: req.params.friendId }}, 
+            { _id: req.params.userId },
+            { $pull: { friends: req.params.friendId } },
             { new: true })
-          .then((userData) => {
-            if (!userData) {
-              return res.status(404).json({ message: 'No matching id found' });
-            }
-            res.json(userData);
-          })
-          .catch((err) => {
-            console.log(err);
-            res.status(500).json(err);
-          });
-      }
+            .then((userData) => {
+                if (!userData) {
+                    return res.status(404).json({ message: 'No matching id found' });
+                }
+                res.json(userData);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
+    }
 };
 
 module.exports = userController;
