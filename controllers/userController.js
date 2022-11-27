@@ -47,7 +47,8 @@ const userController = {
         )
             .then((userData) => {
                 if (!userData) {
-                    return res.status(404).json({ message: 'No matching id found to update' });
+                    res.status(404).json({ message: 'No matching id found to update' });
+                    return;
                 }
                 res.json(userData);
             })
@@ -73,6 +74,24 @@ const userController = {
               res.status(500).json(err);
           })
       },
+      addFriend(req, res) {
+        User.findOneAndUpdate(
+            { id: req.params.userId },
+            { $addToSet: { friends: req.params.friendId }},
+            { new: true, runValidators: true }
+        )
+        .then((userData) => {
+            if(!userData) {
+                res.json(404).json({ message: 'No matching id found'});
+                return;
+            }
+            res.json(userData);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json(err);
+        });
+      }
 };
 
 module.exports = userController;
