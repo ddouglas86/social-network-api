@@ -1,4 +1,4 @@
-const { User, Thought } = require('../models/User');
+const { User, Thought } = require('../models');
 
 const userController = {
     getAllUsers(req, res) {
@@ -91,6 +91,22 @@ const userController = {
             console.log(err);
             res.status(500).json(err);
         });
+      },
+      deleteFriend(req, res) {
+        User.findOneAndUpdate(
+            { id: req.params.userId }, 
+            { $pull: { friends: req.params.friendId }}, 
+            { new: true })
+          .then((userData) => {
+            if (!userData) {
+              return res.status(404).json({ message: 'No matching id found' });
+            }
+            res.json(userData);
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json(err);
+          });
       }
 };
 
