@@ -63,7 +63,7 @@ deleteUser(req, res) {
                 res.json(404).json({ message: 'No matching id found' });
                 return;
             }
-            Thought.deleteMany({ _id: { $in: userData.thoughts } });
+            Thought.deleteMany({ userId: { $in: userData.thoughts } });
         })
         .then(() => {
             res.json({ message: 'User deleted' });
@@ -77,7 +77,7 @@ addFriend(req, res) {
     User.findOneAndUpdate(
         { _id: req.params.userId },
         { $addToSet: { friends: req.params.friendId } },
-        { new: true, runValidators: true }
+        { new: true }
     )
         .then((userData) => {
             if (!userData) {
